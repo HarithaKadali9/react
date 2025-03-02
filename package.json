@@ -2,10 +2,9 @@
   "name": "namasthe-react",
   "version": "1.0.0",
   "description": "This is namasthe react taught by Akshay Saini",
-  "main": "App.js",
   "scripts": {
-    "start": "parcel index.html",
-    "build": "parcel build index.html",
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html",
     "test": "jest"
   },
   "author": "Haritha Kadali",
