@@ -4,61 +4,59 @@ import Shimmer from "./Shimmer";
 import { useState, useEffect } from "react";
 
 const Body = () => {
-
-    useEffect(()=>{
-        console.log("UseEffect called");
-    })
-    console.log("Body rendered");
-
-    const fetchData= async()=>{
-        const data=await fetch("");
-        const json=await data.json();
-        console.log(json);
-    }
-
     const [listOfRestaurants, setListOfRestaurants] = useState(resList);
-    const [filteredRestaurant, setfilteredRestaurant] = useState([]);
-    const [searchText, setSearchText]=useState("");
+    const [filteredRestaurant, setfilteredRestaurant] = useState(resList);
+    const [searchText, setSearchText] = useState("");
 
-    try{
-        if(filteredRestaurant.length===0){
-            return <Shimmer/>
+    const fetchData = async () => {
+        try {
+            const data = await fetch("https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9715987&lng=77.5945627");
+            const json = await data.json();
+            console.log(json);
+
+            setListOfRestaurants(json.data.cards);
+            setfilteredRestaurant(json.data.cards);
+        } catch (error) {
+            console.error("Error fetching data:", error);
         }
-    }catch(err){
-        console.log(err.message)
+    };
+
+    useEffect(() => {
+        console.log("UseEffect called");
+        fetchData();
+    }, []);
+
+    if (filteredRestaurant.length === 0) {
+        return <Shimmer />;
     }
-    
+
     return (
         <div className="body">
-
-                
             <div className="filter">
-
                 <div className="search">
-                    <input className="search-input" type="text" value={searchText} onChange={(e)=>{
-                        setSearchText(e.target.value);
-                    }}/>
-                    <button className="search-btn" onClick={()=>{
-                        console.log(searchText)
-                        const filteredRestaurant=listOfRestaurants.filter((res)=>res.name.toLowerCase().includes(searchText.toLowerCase()));
-                        setfilteredRestaurant(filteredRestaurant);
-                        console.log("Button Clicked")
+                    <input 
+                        className="search-input" 
+                        type="text" 
+                        value={searchText} 
+                        onChange={(e) => setSearchText(e.target.value)}
+                    />
+                    <button className="search-btn" onClick={() => {
+                        const filteredList = listOfRestaurants.filter((res) =>
+                            res.name.toLowerCase().includes(searchText.toLowerCase())
+                        );
+                        setfilteredRestaurant(filteredList);
+                        console.log("Button Clicked");
                     }}>
-                     Search
+                        Search
                     </button>
                 </div>
 
-                <button
-                    className="filter-btn"
-                    onClick={() => {
-                        const filteredList = resList.filter((res) => res.avgRating > 4);
-                        console.log("Filtered List:", filteredList);
-                        setListOfRestaurants(filteredList); // Update state safely
-                    }}
-                >
+                <button className="filter-btn" onClick={() => {
+                    const filteredList = listOfRestaurants.filter((res) => res.avgRating > 4);
+                    setfilteredRestaurant(filteredList); // Update state correctly
+                }}>
                     Top Rated Restaurants
                 </button>
-            
             </div>
 
             <div className="res-container">
